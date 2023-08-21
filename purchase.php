@@ -659,7 +659,7 @@ input[type="submit"]{
     if (confirm('Are you sure you want to delete this record?')) {
       // Send an AJAX request to delete the record
       $.ajax({
-        url: 'delete_record.php', // Replace with your backend endpoint
+        url: 'delete.php', // Replace with your backend endpoint
         method: 'POST',
         data: { id: rowId },
         success: function(response) {
