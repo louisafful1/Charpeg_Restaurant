@@ -1,7 +1,7 @@
 <?php 
 include "include/database.php";
 
- if($_SERVER['REQUEST_METHOD'] === "POST"){
+ if(($_SERVER['REQUEST_METHOD'] === "POST") && isset($_POST['submit'])){
    
 $food_item = $_POST['food_item'];
 $quantity = $_POST['quantity'];
@@ -9,18 +9,20 @@ $TotalPrice = $_POST['TotalPrice'];
 $staff = "LOUIS";
 // $price =243;
 
-
-if ($food_item != '---SELECT ITEM----') {
-  // Process the selected food item
-  // Your further processing logic here
-
+if ($quantity == '' || $quantity == 0) {
+  echo "<script>alert('Quantity cannot be zero or empty')</script>";
+  echo "<script>window.location = 'purchase.php'</script>"; // Redirect to clear history
+        exit();
+}elseif ($food_item != '---SELECT ITEM----') {
+  
+ 
 $stmt = $connection->prepare("INSERT INTO `transactions`(`food_item`, `quantity`, `amount`, `date`, `staff`) VALUES (?, ?, ?, NOW(), ?)");
 $stmt->bind_param("sids", $food_item, $quantity, $TotalPrice, $staff);
 
 if ($stmt->execute()) {
   
     header("Location: purchase.php"); //redirect to prevent re-inserting
-exit;
+    exit();
 } else {
     echo "Error: " . $stmt->error;
 }
@@ -28,10 +30,9 @@ exit;
 $stmt->close();
 } else {
   echo "<script>alert('Please Select a food Item')</script>";
+  header("Location: purchase.php"); //redirect to prevent re-inserting
+    exit();
 }
-
-
-
 
  }
 
@@ -147,6 +148,19 @@ header #menu-bar {
   display: none;
 }
 
+/* #totalPrice {
+        display: inline-block;
+        width: auto;
+        padding: 1.5rem 5rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    } */
+
 input[type="submit"]{
     background-color: #F7CA3E;
 }
@@ -220,14 +234,14 @@ input[type="submit"]{
                     <div class="js-quantity-counter row align-items-center">
                        
                       <div class="col">
-                        <input style="text-align:center;" class="js-result form-control form-control-quantity-counter" type="number" name="quantity" value="1"  oninput="calculateTotalPrice()" >
+                        <input style="text-align:center;" class="js-result form-control form-control-quantity-counter" type="number" name="quantity" value="1" readonly>
                       </div>
                       <a class="js-minus btn btn-white btn-xs btn-icon rounded-circle" href="javascript:;">
-        <i class="fas fa-minus"></i>
+        <i class="bi bi-dash-circle-fill display-5"></i>
       </a>
                       <!-- End Col -->
                       <a class="js-plus btn btn-white btn-xs btn-icon rounded-circle" href="javascript:;">
-        <i class="fas fa-plus"></i>
+        <i class="bi bi-plus-circle-fill display-5"></i>
             </a>
                     
                     </div>
@@ -241,8 +255,8 @@ input[type="submit"]{
                   <!-- Input Group -->
                   <div class="mb-3">
                     <label for="">Price</label>
-                    <input type="number" id="price"name="TotalPrice"  class="form-control" placeholder="00" aria-label="00">
-                    
+                    <input type="number" id="price" name="TotalPrice"  class="form-control" placeholder="00" aria-label="00">
+                    <!-- <span id="totalPrice" class="form-control"></span> -->
 
                   </div>
                   <!-- End Input Group -->
@@ -256,7 +270,7 @@ input[type="submit"]{
                 <!-- Input Group -->
                 <div class="mb-2">
                  
-                  <input type="Submit" class="form-control mt-4 text-dark" >
+                  <input type="Submit" name="submit" class="form-control mt-4 text-dark" >
 </form>
                 </div>
                 <!-- End Input Group -->
@@ -384,14 +398,16 @@ input[type="submit"]{
                     <td></td>
                     <td></td>
                     <td>
+                      
 
 
                       <div class="btn-group" role="group">
-                        <a class="btn btn-white btn-sm" data-bs-toggle="modal" data-bs-target="#updateStockModal" href="">
+                        <!-- edit quantity button -->
+                        <a class="btn btn-white btn-sm edit_quantity" data-id="<?php echo $row['id']; ?>" data-bs-toggle="modal" data-bs-target="#updateStockModal">
                           <i class="bi-pencil-fill me-1"></i> 
                         </a>
 
-                              <!-- Modal -->          
+                              <!-- Modal for updating quantity -->          
      <div id="updateStockModal" class="modal fade" role="dialog" data-backdrop="static" style="margin-top:4rem;">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -405,34 +421,21 @@ input[type="submit"]{
                             <div class="col-sm-12 form-group-sm">
                                 <label>Quantity</label>
 
-
-
-                                <?php
-                                
-                                // if(isset())
-                                
-                                // $sel = mysqli_query($connection, "select quantity from transactions where id=''")
-                                
-                                
-                                ?>
-
-
-
-
-
-                                <input type="text" class="form-control">
+                                <input type="text" class="form-control" id="editQuantityValue" data-id="<?php echo $row['id']; ?>">
                             </div>
                         </div>
                         <input type="hidden" id="stockUpdateItemId">
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" id="stockUpdateSubmit">Update</button>
+                    <button class="btn btn-primary" type="submit" id="quantityUpdateSubmit">Update</button>
                     <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
+
+
     <!-- End of modal -->
                         <a class="btn btn-white btn-sm text-danger delete-record" data-id="<?php echo $row['id']; ?>" href="">
                           <i class="bi-trash-fill me-1"></i> 
@@ -550,133 +553,17 @@ input[type="submit"]{
 
     });
   </script>
-
-
-
   <!-- Style Switcher JS -->
   <script>$(document).ready(function() {
     $('#menu-bar').click(function() {
         $(this).toggleClass('fa-times');
         $('.navbar').toggleClass('nav-toggle');
     })
-
-
-
-});</script>
-
-  <script>
-    // Function to handle the AJAX request and update the price field
-    function updatePrice() {
-        var selectedItem = document.getElementById('food_item').value;
-        var xhttp = new XMLHttpRequest();
-
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var priceElement = document.getElementById('price');
-                priceElement.dataset.initialPrice = this.responseText; // Store initial price in a custom attribute
-                calculateTotalPrice(); // Recalculate the total price
-            }
-        };
-
-        xhttp.open("GET", "get_price.php?food_item=" + selectedItem, true);
-        xhttp.send();
-    }
-
-    // Function to calculate the total price and update the 'price' input field
-    function calculateTotalPrice() {
-        var quantity = parseFloat(document.forms['form1']['quantity'].value);
-        var initialPrice = parseFloat(document.getElementById('price').dataset.initialPrice);
-
-        // Check if the values are valid numbers and if quantity is not empty
-        if (!isNaN(quantity) && !isNaN(initialPrice) && quantity !== "") {
-            var totalPrice = quantity * initialPrice;
-            // Update the 'price' input field with the calculated total price
-            document.getElementById('price').value = totalPrice.toFixed(2);
-        }
-    }
-
-    // Event listeners
-    document.getElementById('food_item').addEventListener('change', updatePrice);
-    document.forms['form1']['quantity'].addEventListener('input', calculateTotalPrice);
-</script>
-
-
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const minusBtn = document.querySelector(".js-minus");
-    const plusBtn = document.querySelector(".js-plus");
-    const quantityInput = document.querySelector(".js-result");
-    const priceInput = document.getElementById("price");
-
-    minusBtn.addEventListener("click", function (event) {
-      event.preventDefault();
-      handleQuantityChange(-1);
-    });
-
-    plusBtn.addEventListener("click", function (event) {
-      event.preventDefault();
-      handleQuantityChange(1);
-    });
-
-    function handleQuantityChange(changeValue) {
-      const currentValue = parseInt(quantityInput.value);
-      const newValue = currentValue + changeValue;
-      if (newValue >= 1) {
-        quantityInput.value = newValue;
-        calculateTotalPrice();
-      }
-    }
-
-    function updatePrice() {
-      // ... (same as previous implementation)
-    }
-
-    function calculateTotalPrice() {
-  const quantity = parseInt(quantityInput.value);
-  const price = parseInt(priceInput.value);
-  const totalPrice = quantity * price;
-  document.getElementById("totalPrice").innerText = totalPrice.toFixed(2);
-}
-
-
-    // Event listeners
-    document.getElementById("food_item").addEventListener("change", updatePrice);
-    document.forms["form1"]["quantity"].addEventListener("input", calculateTotalPrice);
-  });
-</script>
-
-
-
-<script>
-  $(document).ready(function() {
-  $(document).on('click', '.delete-record', function() {
-    // event.preventDefault();
-    
-    var rowId = $(this).data('id');
-
-    // Confirm before deletion
-    if (confirm('Are you sure you want to delete this record?')) {
-      // Send an AJAX request to delete the record
-      $.ajax({
-        url: 'delete.php', // Replace with your backend endpoint
-        method: 'POST',
-        data: { id: rowId },
-        success: function(response) {
-          // If deletion is successful, remove the deleted row from the table
-          if (response === 'success') {
-            $(this).closest('tr').remove();
-           
-          }
-        },
-        error: function(xhr, status, error) {
-          console.error(error);
-        }
-      });
-    }
-  });
 });
 
 </script>
+
+
+<script src="js/ajax.js"></script>
 </body>
 </html>
