@@ -1,6 +1,6 @@
 $(document).ready(function() {
     
-    // delete record ajax
+   /******* HANDLING THE DELETE RECORD. ******/
   $(document).on('click', '.delete-record', function() {
     // event.preventDefault();
     
@@ -8,6 +8,7 @@ $(document).ready(function() {
 
     // Confirm before deletion
     if (confirm('Are you sure you want to delete this transaction?')) {
+
       // Send an AJAX request to delete the record
       $.ajax({
         url: 'ajax_db.php', 
@@ -26,17 +27,15 @@ $(document).ready(function() {
       });
     }
   });
+  
 
 
-
-  // edit Quantity Ajax
+/******* HANDLING THE EDIT BUTTON. ******/
   $(document).on('click', '.edit_quantity', function() {
     // event.preventDefault();
     var editQuantityValue = $("#editQuantityValue");
     var editId = $(this).data('id');
-
-  
-      // Send an AJAX request to delete the record
+    // Send an AJAX request to output the quantity      
       $.ajax({
         url: 'ajax_db.php', 
         method: 'POST',
@@ -52,8 +51,6 @@ $(document).ready(function() {
       });
     
   });
-
-
 
 
   /******* AJAX REQUEST TO UPDATE PRICE AND CALCULATE TOTAL PRICE BASED ON SELECTED ITEM AND QUANTITY. ******/
@@ -139,7 +136,7 @@ document.getElementById("food_item").addEventListener("change", updatePrice);
 
 
 
- /******* EDIT QUANTITY AJAX *****/
+ /******* Update QUANTITY AJAX *****/
  //TASK: IT STILL PERFORMS EVEN WHEN I DELETE IT. 
  $(document).on('click', '#quantityUpdateSubmit', function() {
 
@@ -149,7 +146,7 @@ document.getElementById("food_item").addEventListener("change", updatePrice);
   var updateId = $(this).data('id');
 
 
-    // Send an AJAX request to delete the record
+    // Send an AJAX request to update the record
     $.ajax({
       url: 'ajax_db.php', 
       method: 'POST',
