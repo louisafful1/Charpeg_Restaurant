@@ -8,7 +8,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
   <!-- Meta tag Keywords -->
-  <link href="assets/css/login.css" rel="stylesheet" type="text/css" media="all" />
+  <link href="css/login.css" rel="stylesheet" type="text/css" media="all" />
   <!--offline fonts-->
   <link href="http://fonts.googleapis.com/css?family=Lobster&amp;subset=cyrillic,latin-ext,vietnamese" rel="stylesheet">
   <link href="http://fonts.googleapis.com/css?family=Righteous&amp;subset=latin-ext" rel="stylesheet">

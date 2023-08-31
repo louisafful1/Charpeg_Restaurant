@@ -7,8 +7,9 @@
 body{
 	background:url(../../images/banner.jpg),no-repeat;
 	background-size: cover;
-	background-attachment: fixed;s
+	background-attachment: fixed;
 }
+
 body a{
 transition:0.5s all;
 -webkit-transition:0.5s all;
@@ -17,6 +18,7 @@ transition:0.5s all;
 -ms-transition:0.5s all;
 font-weight:400;
 }
+
 input[type="button"],input[type="submit"]{
 transition:0.5s all;
 -webkit-transition:0.5s all;
@@ -179,9 +181,7 @@ a{
 @media(max-width:1680){
 	
 }
-@media(){
-	
-}
+
 
 @media(max-width:1600px){
 	input[type="text"], input[type="password"]{

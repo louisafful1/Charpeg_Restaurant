@@ -1,0 +1,93 @@
+:root {
+    --yellow: #F7CA3E;
+  }
+  
+  * {
+    /* font-family: 'Roboto', sans-serif; */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    outline: none;
+    border: none;
+    text-transform: capitalize;
+    transition: all .2s linear;
+  }
+
+  html::-webkit-scrollbar {
+    width: 1.4rem;
+  }
+  
+  html::-webkit-scrollbar-track {
+    background: #333;
+  }
+  
+  html::-webkit-scrollbar-thumb {
+    background: var(--yellow);
+  }
+  
+  
+  body{
+      margin-top: 5.5rem;
+  }
+  
+  
+  
+    header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    background: #fff;
+    padding: 0.3rem 10%;
+    box-shadow: 0 .3rem 2rem rgba(0, 0, 0, .1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  header .logo img {
+    height: 3rem;
+  }
+  
+  header .navbar ul {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+  }
+  
+  header .navbar ul li {
+    margin-left: 3rem;
+  }
+  
+  header .navbar ul li a {
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  header .navbar ul li a.active,
+  header .navbar ul li a:hover {
+    color: var(--yellow);
+  }
+  
+  header #menu-bar {
+    font-size: 3rem;
+    color: #666;
+    cursor: pointer;
+    display: none;
+  }
+  
+  input[type="submit"]{
+      background-color: #F7CA3E;
+  }
+  
+  
+  
+  
+  @media (max-width: 768px) {
+    header #menu-bar {
+      display: block;
+    }
+  }
