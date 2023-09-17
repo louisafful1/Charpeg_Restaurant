@@ -17,4 +17,3 @@ if (isset($_GET['food_item'])) {
 } else {
     echo "Error: No food item selected.";
 }
-?>

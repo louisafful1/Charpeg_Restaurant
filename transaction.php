@@ -1,39 +1,77 @@
 <?php
-            include "include/database.php";
+session_start();
 
-            if (($_SERVER['REQUEST_METHOD'] === "POST") && isset($_POST['submit'])) {
+// Check if the user is logged in
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+  // Redirect to the login page or display an error message
+  header("Location: auth/login.php");
+  exit;
+}
 
-              $food_item = $_POST['food_item'];
-              $quantity = $_POST['quantity'];
-              $TotalPrice = $_POST['TotalPrice'];
-              $staff = "Louis Afful";
-              // $price =243;
+include "include/database.php";
 
-              if ($quantity == '' || $quantity == 0) {
-                echo "<script>alert('Quantity cannot be zero or empty')</script>";
-                echo "<script>window.location = 'purchase.php'</script>"; // Redirect to clear history
-                exit();
-              } elseif ($food_item != '---SELECT ITEM----') {
+if (($_SERVER['REQUEST_METHOD'] === "POST") && isset($_POST['submit'])) {
+
+  $food_item = test_input($_POST['food_item']);
+  $quantity = test_input($_POST['quantity']);
+  $price = test_input($_POST['TotalPrice']);
 
 
-                $stmt = $connection->prepare("INSERT INTO `transactions`(`food_item`, `quantity`, `amount`, `date`, `staff`) VALUES (?, ?, ?, NOW(), ?)");
-                $stmt->bind_param("sids", $food_item, $quantity, $TotalPrice, $staff);
 
-                if ($stmt->execute()) {
+  $selectPrice = mysqli_query($connection, "SELECT price from food where food=  '$food_item';");
+  $arr = mysqli_fetch_array($selectPrice);
 
-                  header("Location: purchase.php"); //redirect to prevent re-inserting
-                  exit();
-                } else {
-                  echo "Error: " . $stmt->error;
-                }
+  $TotalPrice =  $quantity * $arr['price'];
 
-                $stmt->close();
-              } else {
-                echo "<script>alert('Please Select a food Item')</script>";
-                header("Location: purchase.php"); //redirect to prevent re-inserting
-                exit();
-              }
-            }
+  if (!$food_item) {
+    echo "<script>alert('Please Select a food Item')</script>";
+  } 
+  if ($TotalPrice == $price && $food_item != '') {
+
+
+    $staff =$_SESSION['name'];
+    // $price =243;
+
+    if ($quantity == '' || $quantity <= 0) {
+      echo "<script>alert('Quantity cannot be zero or empty')</script>";
+      echo "<script>window.location = 'transaction.php'</script>"; // Redirect to clear history
+      exit();
+    } elseif ($food_item != '') {
+
+
+      $stmt = $connection->prepare("INSERT INTO `transactions`(`food_item`, `quantity`, `amount`, `date`, `staff`) VALUES (?, ?, ?, NOW(), ?)");
+      $stmt->bind_param("sids", $food_item, $quantity, $TotalPrice, $staff);
+
+      if ($stmt->execute()) {
+
+        header("Location: transaction.php"); //redirect to prevent re-inserting
+        exit();
+      } else {
+        echo "Error: " . $stmt->error;
+      }
+
+      $stmt->close();
+    } else {
+      echo "<script>alert('Please Select a food Item')</script>";
+      echo "<script>window.location = 'transaction.php'</script>"; // Redirect to clear history
+      exit();
+    }
+  } else {
+    echo "<script>alert('Why do you want to steal...lol')</script>";
+  }
+}
+
+
+function test_input($data)
+{
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  //  $data =mysqli_escape_string($data);
+  // $data = FILTER_VALIDATE_INT
+  $data = htmlspecialchars_decode($data);
+  return $data;
+}
 
 ?>
 
@@ -53,10 +91,12 @@
   <!-- CSS Implementing Plugins -->
   <link rel="stylesheet" href="assets/css/vendor.min.css">
 
+  <script src="node_modules/tom-select/dist/js/tom-select.complete.min.js"></script>
+
   <!-- CSS Front Template -->
   <link rel="stylesheet" href="assets/css/theme.minc619.css?v=1.0">
 
-  <link rel="stylesheet" href="css/purchase.css">
+  <link rel="stylesheet" href="css/transaction.css">
 </head>
 
 <body>
@@ -69,8 +109,11 @@
     <nav class="navbar">
       <ul>
 
-        <li><a href="#">about</a></li>
-        <li><a href="#">Logout</a></li>
+        <li><a href="dashboard.php">Dashboard</a></li>
+        <li><a href="transaction.php">Transaction</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="logout.php">Logout</a></li>
+      </ul>
       </ul>
     </nav>
 
@@ -93,11 +136,12 @@
             $query1 = mysqli_query($connection, $sql1);
 
             ?>
-            <select id="food_item" name="food_item" class="form-control mb-3">
 
+            <select id="food_item" class="form-control mb-3" name="food_item" autocomplete="off" aria-label="Item name">
               <?php
               if (mysqli_num_rows($query1) > 0) {
-                echo "<option readonly selected  style='text-align:left;'>---SELECT ITEM----</option>";
+                echo "<option value=''></option>";
+                // echo "<option readonly   style='text-align:left;'>---SELECT ITEM----</option>";
                 while ($arr = mysqli_fetch_row($query1)) {
 
                   echo "<option class='fs-3'  value='$arr[1]'>" . $arr[1] . "</option>";
@@ -139,7 +183,7 @@
             <!-- Input Group -->
             <div class="mb-3">
               <label for="">Price</label>
-              <input type="number" id="price" name="TotalPrice" class="form-control" placeholder="00" aria-label="00">
+              <input type="number" id="price" name="TotalPrice" class="form-control" placeholder="00" aria-label="00" readonly>
               <!-- <span id="totalPrice" class="form-control"></span> -->
 
             </div>
@@ -177,6 +221,17 @@
           </form>
         </div>
         <div class="d-grid d-sm-flex gap-2">
+
+        <?php
+        // $todayTotalPrice = mysqli_query($connection, "SELECT amount FROM transactions WHERE date=NOW();");
+
+
+        
+        ?>
+
+
+
+            Today's Earned Today: 
         </div>
       </div>
       <!-- End Header -->
@@ -365,7 +420,12 @@
     });
   </script>
 
-
+  <script>
+    new TomSelect("#food_item", {
+      allowEmptyOption: true,
+      create: false
+    });
+  </script>
   <script src="js/ajax.js"></script>
 </body>
 

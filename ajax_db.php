@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { //general post request to handle al
 
 
 
-/******* HANDLING THE EDIT BUTTON. ******/
+    /******* HANDLING THE EDIT BUTTON. ******/
     if (isset($_POST['edit'])) {
 
         $edit = $_POST['edit'];
@@ -44,16 +44,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { //general post request to handle al
         }
     }
 
-/******* HANDLING THE UPDATE BUTTON. ******/
-    if (isset($_POST['update'])) {
-        $update = $_POST['update'];
+    /******* HANDLING THE UPDATE BUTTON. ******/
+    if (isset($_POST['update']) && isset($_POST['currentQuantityValue'])) {
+        $updateId = $_POST['update'];
         $currentQuantityValue = $_POST['currentQuantityValue'];
-        echo   $currentQuantityValue;
-        $updateQuantity = mysqli_query($connection, "UPDATE transactions SET quantity = '$currentQuantityValue' WHERE id=$update");
+
+        $updateQuantity = mysqli_query($connection, "UPDATE transactions SET quantity = '$currentQuantityValue' WHERE id = $updateId");
+
         if ($updateQuantity) {
             echo "Updated successfully";
         } else {
-            echo 'Error deleting record: ' . mysqli_error($connection);
+            echo 'Error updating record: ' . mysqli_error($connection);
         }
     }
 }

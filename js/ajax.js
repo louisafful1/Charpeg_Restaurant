@@ -5,9 +5,9 @@ $(document).ready(function() {
     // event.preventDefault();
     
     var rowId = $(this).data('id');
-
+    
     // Confirm before deletion
-    if (confirm('Are you sure you want to delete this transaction?')) {
+    if (confirm('Are you sure you want to delete this transaction with ?'+ rowId)) {
 
       // Send an AJAX request to delete the record
       $.ajax({
@@ -139,32 +139,28 @@ document.getElementById("food_item").addEventListener("change", updatePrice);
  /******* Update QUANTITY AJAX *****/
  //TASK: IT STILL PERFORMS EVEN WHEN I DELETE IT. 
  $(document).on('click', '#quantityUpdateSubmit', function() {
-
-
-  // event.preventDefault();
   var updatedQuantityValue = $("#editQuantityValue").val();
-  var updateId = $(this).data('id');
+  var updateId = $("#stockUpdateItemId").val(); // Retrieve the item ID from a hidden input field
 
-
-    // Send an AJAX request to update the record
-    $.ajax({
-      url: 'ajax_db.php', 
-      method: 'POST',
-      data: { update: updateId,
-              currentQuantityValue:updatedQuantityValue
-      },
-      
-      success: function(response) {
-        $('#updateStockModal').modal('hide');
-         alert("Updated successfully");
-
-      },
-      error: function(xhr, status, error) {
-        console.error(error);
-      }
-    });
-  
+  // Send an AJAX request to update the record
+  $.ajax({
+    url: 'ajax_db.php',
+    method: 'POST',
+    data: {
+      update: updateId,
+      currentQuantityValue: updatedQuantityValue
+    },
+    success: function(response) {
+      $('#updateStockModal').modal('hide');
+      alert(response);
+    },
+    error: function(xhr, status, error) {
+      console.error(error);
+    }
+  });
 });
+
+
 
 
 
